@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.playwrite{
+    font-family: "Playwrite PL", cursive;
+}
+.Finlandica{
+  font-family: "Finlandica Headline", sans-serif;
+  font-style: normal;
+}
