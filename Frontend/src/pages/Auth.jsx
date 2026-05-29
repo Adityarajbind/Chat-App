@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
@@ -6,7 +7,7 @@ import OverlayPanel from "../components/OverlayPanel";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
-
+const navigate = useNavigate();
   // LOGIN
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -40,9 +41,13 @@ const Auth = () => {
 
       localStorage.setItem("token", result.token);
 
+      localStorage.setItem("user", JSON.stringify(result));
+
       console.log(result);
-      setLoginEmail("")
-      setLoginPassword("")
+      setLoginEmail("");
+      setLoginPassword("");
+
+      navigate("/");
     } catch (error) {
       console.log(error.message);
     }
@@ -73,10 +78,14 @@ const Auth = () => {
 
       localStorage.setItem("token", result.token);
 
+      localStorage.setItem("user", JSON.stringify(result));
+
       console.log(result);
-      setRegisterEmail("")
-      setRegisterPassword("")
-      setRegisterUsername("")
+      setRegisterEmail("");
+      setRegisterPassword("");
+      setRegisterUsername("");
+
+      navigate("/");
     } catch (error) {
       console.log(error.message);
     }
@@ -86,12 +95,11 @@ const Auth = () => {
     <>
       <div
         className=" flex justify-center items-center flex-col h-screen m-0 opacity-85 bg-no-repeat bg-center bg-cover"
-        style={{backgroundImage:'url("/background.png")'}}
-      >
-      </div>
+        style={{ backgroundImage: 'url("/background.png")' }}
+      ></div>
       <div
         className={`overflow-hidden shadow-[0_14px_28px_rgba(0,0,0,0.25),0_10px_10px_rgba(0,0,0,0.22)] backdrop-blur-md bg-white/5 border-4 rounded-xl border-white/15 opacity-100 w-3xl max-w-full min-h-120 absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
-          isSignUp ? "right-panel-active" : "" 
+          isSignUp ? "right-panel-active" : ""
         }`}
       >
         {/* REGISTER */}
@@ -118,22 +126,6 @@ const Auth = () => {
 
         {/* OVERLAY */}
         <OverlayPanel isSignUp={isSignUp} setIsSignUp={setIsSignUp} />
-
-         <style>
-        {`
-          @keyframes show {
-            0%, 49.99% {
-              opacity: 0;
-              z-index: 1;
-            }
-
-            50%, 100% {
-              opacity: 1;
-              z-index: 5;
-            }
-          }
-        `}
-      </style>
       </div>
     </>
   );

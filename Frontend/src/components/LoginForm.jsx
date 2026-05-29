@@ -12,6 +12,8 @@ const LoginForm = ({
     isSignUp ? "translate-x-1/4 opacity-0" : "z-20"
   }`}
 >
+
+
       <form
         onSubmit={HandleLogin}
         className=" flex items-center justify-center flex-col px-[50px] h-full text-center"

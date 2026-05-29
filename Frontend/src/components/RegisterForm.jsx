@@ -10,9 +10,10 @@ const RegisterForm = ({
 }) => {
   return (
     <div
-      className={`absolute top-0 left-0 h-full w-1/2 opacity-0 z-[1] transition-all duration-700 ease-in-out text-white ${
-        isSignUp &&
+      className={`absolute top-0 left-0  h-full w-1/2 opacity-0 z-[1] transition-all duration-700 ease-in-out text-white ${
+        isSignUp ?
         "translate-x-full opacity-100 z-[5] animate-[show_0.6s]"
+        :""
       }`}
     >
      <form
