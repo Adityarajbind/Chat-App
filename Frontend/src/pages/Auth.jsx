@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
 import OverlayPanel from "../components/OverlayPanel";
 
 const Auth = () => {
+  const { login } = useAuth();
+
   const [isSignUp, setIsSignUp] = useState(false);
 const navigate = useNavigate();
   // LOGIN
@@ -44,6 +47,7 @@ const navigate = useNavigate();
       localStorage.setItem("user", JSON.stringify(result));
 
       console.log(result);
+      login(result);
       setLoginEmail("");
       setLoginPassword("");
 
@@ -79,7 +83,7 @@ const navigate = useNavigate();
       localStorage.setItem("token", result.token);
 
       localStorage.setItem("user", JSON.stringify(result));
-
+      login(result);
       console.log(result);
       setRegisterEmail("");
       setRegisterPassword("");
