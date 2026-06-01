@@ -23,13 +23,13 @@ const Home = () => {
   };
   const test = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/rooms/create", {
+      const response = await fetch("http://localhost:5000/api/rooms/join", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          roomName: "Test Room",
+          roomCode: "TWR00J",
           userId: userId,
         }),
       });
@@ -48,7 +48,7 @@ const Home = () => {
         backgroundImage: "url('/background.png')",
       }}
     >
-      <button onClick={test} className="bg-amber-200 rounded-2xl px-4 cursor-pointer">Test Create Room</button>
+      <button onClick={test} className="bg-amber-200 absolute z-999 rounded-[2px] px-4  cursor-pointer">Test Create Room</button>
       <CreateRoomModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
