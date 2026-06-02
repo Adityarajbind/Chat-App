@@ -1,11 +1,13 @@
 import { Plus, LogIn, LogOut } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import JoinRoomModal from "../components/JoinRoomModal";
 import CreateRoomModal from "../components/CreateRoomModal";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
+  const navigate = useNavigate();
   const { username, email, userId } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -15,32 +17,65 @@ const Home = () => {
 
   const [roomCode, setRoomCode] = useState("");
 
-  const HandleCreateRoom = () => {
-    console.log("room creation");
-  };
-  const HandleJoinRoom = () => {
-    console.log("joining room ");
-  };
-  const test = async () => {
-    try {
-      const response = await fetch("http://localhost:5000/api/rooms/join", {
+const HandleCreateRoom = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://localhost:5000/api/rooms/create",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          roomCode: "TWR00J",
-          userId: userId,
+          roomName,
         }),
-      });
+      }
+    );
 
-      const result = await response.json();
+    const result = await response.json();
 
-      console.log(result);
-    } catch (error) {
-      console.error(error);
+    console.log(result);
+
+    if (response.ok) {
+      navigate(`/room/${result.roomCode}`);
     }
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const HandleJoinRoom = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://localhost:5000/api/rooms/join",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          roomCode,
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    console.log(result);
+
+    if (response.ok) {
+      navigate(`/room/${result.roomCode}`);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
   return (
     <div
       className="min-h-screen bg-cover bg-center text-white"
@@ -48,7 +83,6 @@ const Home = () => {
         backgroundImage: "url('/background.png')",
       }}
     >
-      <button onClick={test} className="bg-amber-200 absolute z-999 rounded-[2px] px-4  cursor-pointer">Test Create Room</button>
       <CreateRoomModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
@@ -66,7 +100,7 @@ const Home = () => {
       />
       {/* Overlay */}
       <div className="min-h-screen bg-black/40 backdrop-blur-[2px]">
-        <Header username = {username} />
+        <Header username={username} />
         {/* Main Content */}
         <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pt-8">
           <h1 className="playwrite mb-4 text-center text-5xl">Welcome Back</h1>
@@ -132,7 +166,7 @@ const Home = () => {
           </div>
 
           {/* Logout */}
-          <button className="mt-12 flex items-center gap-2 rounded-xl bg-red-500/20 px-6 py-3 text-red-300 transition hover:bg-red-500/30">
+          <button className="mt-12 cursor-pointer flex items-center gap-2 rounded-xl bg-red-500/20 px-6 py-3 text-red-300 transition hover:bg-red-500/30">
             <LogOut size={18} />
             Logout
           </button>

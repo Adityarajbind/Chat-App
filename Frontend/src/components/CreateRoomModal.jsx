@@ -25,14 +25,14 @@ const CreateRoomModal = ({
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl border border-white/20 py-3"
+            className="flex-1 cursor-pointer rounded-xl border border-white/20 py-3"
           >
             Cancel
           </button>
 
           <button
             onClick={onCreate}
-            className="flex-1 rounded-xl bg-violet-600 py-3 hover:bg-violet-500"
+            className="flex-1 cursor-pointer rounded-xl bg-violet-600 py-3 hover:bg-violet-500"
           >
             Create
           </button>

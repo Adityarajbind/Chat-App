@@ -27,14 +27,14 @@ const JoinRoomModal = ({
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 rounded-xl border border-white/20 py-3"
+            className="flex-1 rounded-xl cursor-pointer border border-white/20 py-3"
           >
             Cancel
           </button>
 
           <button
             onClick={onJoin}
-            className="flex-1 rounded-xl bg-violet-600 py-3 hover:bg-violet-500"
+            className="flex-1 rounded-xl cursor-pointer bg-violet-600 py-3 hover:bg-violet-500"
           >
             Join
           </button>
