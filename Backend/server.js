@@ -8,6 +8,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import { Server } from "socket.io";
 import http from "http";
 
+const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
@@ -20,7 +21,6 @@ dotenv.config();
 
 connectDB();
 
-const app = express();
 
 app.use(cors());
 app.use(express.json());
@@ -34,18 +34,20 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/messages", messageRoutes);
 
 io.on("connection", (socket) => {
-  console.log("User Connected:", socket.id);
-
-  socket.on("join_room", (roomCode) => {
+  socket.on("join_room", ({ roomCode, username }) => {
     socket.join(roomCode);
 
-    console.log(
-      `${socket.id} joined room ${roomCode}`
-    );
+    socket.to(roomCode).emit("member_joined", {
+      message: `${username} joined the room`,
+    });
   });
 
-  socket.on("disconnect", () => {
-    console.log("User Disconnected");
+  socket.on("leave_room", ({ roomCode, username }) => {
+    socket.to(roomCode).emit("member_left", {
+      message: `${username} left the room`,
+    });
+
+    socket.leave(roomCode);
   });
 });
 

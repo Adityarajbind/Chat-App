@@ -51,8 +51,11 @@ const joinRoom = async (req, res) => {
 
     if (!room.members.includes(userId)) {
       room.members.push(userId);
-      await room.save();
     }
+
+    room.lastActivity = new Date();
+
+    await room.save();
 
     res.json(room);
   } catch (error) {
@@ -122,20 +125,12 @@ const leaveRoom = async (req, res) => {
     const originalLength = room.members.length;
 
     room.members = room.members.filter(
-      (member) => member.toString() !== userId
+      (member) => member.toString() !== userId,
     );
 
     if (room.members.length === originalLength) {
       return res.status(400).json({
         message: "User is not in this room",
-      });
-    }
-
-    if (room.members.length === 0) {
-      await Room.findByIdAndDelete(room._id);
-
-      return res.json({
-        message: "Room deleted",
       });
     }
 

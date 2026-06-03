@@ -22,6 +22,18 @@ const sendMessage = async (req, res) => {
       content,
     });
 
+    const populatedMessage = await Message.findById(message._id).populate(
+      "sender",
+      "username",
+    );
+
+    room.lastActivity = new Date();
+
+    await room.save();
+    io.to(roomCode).emit("receive_message", populatedMessage);
+
+    res.status(201).json(populatedMessage);
+
     res.status(201).json(message);
   } catch (error) {
     res.status(500).json({
@@ -58,7 +70,4 @@ const getMessages = async (req, res) => {
   }
 };
 
-export {
-  sendMessage,
-  getMessages,
-};
+export { sendMessage, getMessages };

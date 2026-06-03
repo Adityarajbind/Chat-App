@@ -26,11 +26,23 @@ const RoomSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    lastActivity: {
+      type: Date,
+      default: Date.now,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+RoomSchema.index(
+  { lastActivity: 1 },
+  {
+    expireAfterSeconds: 3 * 24 * 60 * 60,
+  }
+);
+
 
 const room = mongoose.model("Room", RoomSchema);
 export default room;

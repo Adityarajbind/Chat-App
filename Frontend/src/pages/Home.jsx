@@ -8,7 +8,7 @@ import { useAuth } from "../context/AuthContext";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { username, email, userId } = useAuth();
+  const { username, email, userId ,logout  } = useAuth();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -76,9 +76,14 @@ const HandleJoinRoom = async () => {
     console.error(error);
   }
 };
+
+const HandleLogout = () => {
+  logout();
+  navigate("/auth");
+};
   return (
     <div
-      className="min-h-screen bg-cover bg-center text-white"
+      className="min-h-screen bg-cover op8 bg-center text-white"
       style={{
         backgroundImage: "url('/background.png')",
       }}
@@ -166,7 +171,7 @@ const HandleJoinRoom = async () => {
           </div>
 
           {/* Logout */}
-          <button className="mt-12 cursor-pointer flex items-center gap-2 rounded-xl bg-red-500/20 px-6 py-3 text-red-300 transition hover:bg-red-500/30">
+          <button className="mt-12 cursor-pointer flex items-center gap-2 rounded-xl bg-red-500/20 px-6 py-3 text-red-300 transition hover:bg-red-500/30" onClick={HandleLogout}>
             <LogOut size={18} />
             Logout
           </button>

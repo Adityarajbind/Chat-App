@@ -19,15 +19,18 @@ const MessageSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    expiresAt: {
+      type: Date,
+      default: () =>
+        new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      expires: 0,
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const Message = mongoose.model(
-  "Message",
-  MessageSchema
-);
+const Message = mongoose.model("Message", MessageSchema);
 
 export default Message;

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-
+import socket from "../socket";
 const Room = () => {
   const { roomCode } = useParams();
   const navigate = useNavigate();
@@ -90,7 +90,51 @@ const Room = () => {
     GetMembers();
     GetMessages();
   }, []);
+  useEffect(() => {
+    socket.emit("join_room", {
+      roomCode,
+      username,
+    });
+  }, [roomCode]);
+  useEffect(() => {
+    socket.on("receive_message", (newMessage) => {
+      setMessages((prev) => [...prev, newMessage]);
+    });
 
+    return () => {
+      socket.off("receive_message");
+    };
+  }, []);
+  useEffect(() => {
+    socket.on("member_joined", (data) => {
+      GetMembers();
+      setMessages((prev) => [
+        ...prev,
+        {
+          _id: Date.now(),
+          type: "system",
+          content: data.message,
+        },
+      ]);
+    });
+
+    socket.on("member_left", (data) => {
+      GetMembers();
+      setMessages((prev) => [
+        ...prev,
+        {
+          _id: Date.now(),
+          type: "system",
+          content: data.message,
+        },
+      ]);
+    });
+
+    return () => {
+      socket.off("member_joined");
+      socket.off("member_left");
+    };
+  }, []);
   const HandleSendMessage = async () => {
     if (!message.trim()) return;
 
@@ -114,17 +158,17 @@ const Room = () => {
       console.log(result);
 
       setMessage("");
-
-      GetMessages();
     } catch (error) {
       console.error(error);
     }
   };
-  const HandleLeaveRoom = async () => {
-    try {
-      const token = localStorage.getItem("token");
+const HandleLeaveRoom = async () => {
+  try {
+    const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5000/api/rooms/leave", {
+    const response = await fetch(
+      "http://localhost:5000/api/rooms/leave",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -133,19 +177,23 @@ const Room = () => {
         body: JSON.stringify({
           roomCode,
         }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (response.ok) {
+      socket.emit("leave_room", {
+        roomCode,
+        username,
       });
 
-      const result = await response.json();
-
-      console.log(result);
-
-      if (response.ok) {
-        navigate("/");
-      }
-    } catch (error) {
-      console.error(error);
+      navigate("/");
     }
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
   return (
     <div
       className="min-h-screen bg-cover bg-center text-white"
@@ -193,29 +241,46 @@ const Room = () => {
           <div className="flex flex-col rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 transition ">
             {/* Messages List */}
             <div className="flex-1 space-y-4 overflow-y-auto p-6">
-              {messages.map((msg) => (
-                <div
-                  key={msg._id}
-                  className={`flex  ${
-                    msg.sender._id === userId ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  <div className="max-w-[70%]">
-                    <p className={`text-xs text-white/60 ${msg.sender._id === userId ? "text-right " : ""}`}>
-                      {msg.sender.username}
-                    </p>
+              {messages.map((msg) => {
+                if (msg.type === "system") {
+                  return (
                     <div
-                      className={`w-full rounded-md px-2 py-1  ${
-                        msg.sender._id === userId
-                          ? "bg-violet-600"
-                          : "bg-white/10"
-                      }`}
+                      key={msg._id}
+                      className="my-2 text-center text-sm text-white/50"
                     >
-                      <p>{msg.content}</p>
+                      {msg.content}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={msg._id}
+                    className={`flex  ${
+                      msg.sender._id === userId
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div className="max-w-[70%]">
+                      <p
+                        className={`text-xs text-white/60 ${msg.sender._id === userId ? "text-right " : ""}`}
+                      >
+                        {msg.sender.username}
+                      </p>
+                      <div
+                        className={`w-full rounded-md px-2 py-1  ${
+                          msg.sender._id === userId
+                            ? "bg-violet-600"
+                            : "bg-white/10"
+                        }`}
+                      >
+                        <p>{msg.content}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Input */}
