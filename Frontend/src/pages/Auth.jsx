@@ -10,6 +10,7 @@ const Auth = () => {
   const { login } = useAuth();
 
   const [isSignUp, setIsSignUp] = useState(false);
+  const [MobileisSignUp, setMobileisSignUp] = useState(false)
 const navigate = useNavigate();
   // LOGIN
   const [loginEmail, setLoginEmail] = useState("");
@@ -102,13 +103,15 @@ const navigate = useNavigate();
         style={{ backgroundImage: 'url("/background.png")' }}
       ></div>
       <div
-        className={`overflow-hidden shadow-[0_14px_28px_rgba(0,0,0,0.25),0_10px_10px_rgba(0,0,0,0.22)] backdrop-blur-md bg-white/5 border-4 rounded-xl border-white/15 opacity-100 w-3xl max-w-full min-h-120 absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
+        className={`overflow-hidden shadow-[0_14px_28px_rgba(0,0,0,0.25),0_10px_10px_rgba(0,0,0,0.22)] backdrop-blur-md bg-white/5 border-4 rounded-xl border-white/15 opacity-100 w-3xl max-[900px]:w-2xl max-[700px]:w-[320px] max-w-full min-h-120 max-[900px]:min-h-100 absolute  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
           isSignUp ? "right-panel-active" : ""
         }`}
       >
         {/* REGISTER */}
         <RegisterForm
           isSignUp={isSignUp}
+          setMobileisSignUp = {setMobileisSignUp}
+          MobileisSignUp = {MobileisSignUp}
           username={registerUsername}
           email={registerEmail}
           password={registerPassword}
@@ -121,6 +124,8 @@ const navigate = useNavigate();
         {/* LOGIN */}
         <LoginForm
           isSignUp={isSignUp}
+          setMobileisSignUp = {setMobileisSignUp}
+          MobileisSignUp = {MobileisSignUp}
           email={loginEmail}
           password={loginPassword}
           setEmail={setLoginEmail}

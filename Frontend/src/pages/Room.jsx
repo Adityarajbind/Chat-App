@@ -196,14 +196,14 @@ const HandleLeaveRoom = async () => {
 };
   return (
     <div
-      className="min-h-screen bg-cover bg-center text-white"
+      className="min-h-screen bg-cover bg-center opacity-90 text-white"
       style={{
         backgroundImage: "url('/background.png')",
       }}
     >
-      <div className="min-h-screen bg-black/40 backdrop-blur-[2px] p-6">
+      <div className="min-h-screen  p-6">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 p-5 ">
+        <div className="mb-6 flex items-center justify-between rounded-3xl  overflow-hidden backdrop-blur-sm bg-white/10 border-2  border-white/15 transition p-5 ">
           <div>
             <h1 className="text-3xl font-bold">Room Chat</h1>
 

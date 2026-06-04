@@ -32,9 +32,7 @@ const sendMessage = async (req, res) => {
     await room.save();
     io.to(roomCode).emit("receive_message", populatedMessage);
 
-    res.status(201).json(populatedMessage);
-
-    res.status(201).json(message);
+    return res.status(201).json(populatedMessage);
   } catch (error) {
     res.status(500).json({
       message: error.message,

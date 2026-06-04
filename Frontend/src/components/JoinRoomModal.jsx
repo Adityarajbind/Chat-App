@@ -8,8 +8,8 @@ const JoinRoomModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1a1333]/90 p-8 text-white shadow-2xl backdrop-blur-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center  bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#2a1c62] p-8 text-white shadow-2xl backdrop-blur-xl">
         <h2 className="mb-6 text-center text-3xl font-bold">
           Join Room
         </h2>

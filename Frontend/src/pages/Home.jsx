@@ -83,7 +83,7 @@ const HandleLogout = () => {
 };
   return (
     <div
-      className="min-h-screen bg-cover op8 bg-center text-white"
+      className="min-h-screen bg-cover opacity-90 bg-center text-white"
       style={{
         backgroundImage: "url('/background.png')",
       }}
@@ -104,7 +104,7 @@ const HandleLogout = () => {
         onJoin={HandleJoinRoom}
       />
       {/* Overlay */}
-      <div className="min-h-screen bg-black/40 backdrop-blur-[2px]">
+      <div className="min-h-screen ">
         <Header username={username} />
         {/* Main Content */}
         <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pt-8">
@@ -118,7 +118,7 @@ const HandleLogout = () => {
           <div className="grid w-full max-w-4xl gap-8 md:grid-cols-2">
             {/* Create Room */}
             <div
-              className="group cursor-pointer rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 p-8  transition hover:scale-[1.02] hover:bg-white/15"
+              className="group p-8 cursor-pointer rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 transition hover:scale-[1.02] hover:bg-white/15"
               onClick={() => setShowCreateModal(true)}
             >
               <Plus size={40} className="mb-4 text-violet-400" />

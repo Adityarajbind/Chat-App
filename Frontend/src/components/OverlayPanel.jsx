@@ -1,7 +1,7 @@
 const OverlayPanel = ({ isSignUp, setIsSignUp }) => {
   return (
     <div
-      className={`absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-700 ease-in-out z-[100] ${
+      className={`absolute max-[700px]:hidden top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-700 ease-in-out z-[100] ${
         isSignUp ? "-translate-x-full" : ""
       }`}
     >
@@ -18,7 +18,7 @@ const OverlayPanel = ({ isSignUp, setIsSignUp }) => {
               : "translate-x-[-20%]"
           }`}
         >
-          <h1 className="font-bold text-4xl playwrite">
+          <h1 className="font-bold text-4xl max-[900px]:text-3xl playwrite">
             Welcome Back!
           </h1>
 
@@ -43,7 +43,7 @@ const OverlayPanel = ({ isSignUp, setIsSignUp }) => {
               : "translate-x-0"
           }`}
         >
-          <h1 className="font-bold text-4xl playwrite">
+          <h1 className="font-bold text-4xl max-[900px]:text-3xl playwrite">
             Hello, Friend!
           </h1>
 
