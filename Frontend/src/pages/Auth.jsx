@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/useToast";
 
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
@@ -8,6 +9,7 @@ import OverlayPanel from "../components/OverlayPanel";
 
 const Auth = () => {
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const [isSignUp, setIsSignUp] = useState(false);
   const [MobileisSignUp, setMobileisSignUp] = useState(false)
@@ -51,9 +53,10 @@ const navigate = useNavigate();
       setLoginEmail("");
       setLoginPassword("");
 
+      showToast("Welcome back!", "success");
       navigate("/");
     } catch (error) {
-      console.log(error.message);
+      showToast(error.message || "Unable to sign in. Please try again.", "error");
     }
   }
 
@@ -89,9 +92,10 @@ const navigate = useNavigate();
       setRegisterPassword("");
       setRegisterUsername("");
 
+      showToast("Your account is ready. Welcome!", "success");
       navigate("/");
     } catch (error) {
-      console.log(error.message);
+      showToast(error.message || "Unable to create your account.", "error");
     }
   }
 

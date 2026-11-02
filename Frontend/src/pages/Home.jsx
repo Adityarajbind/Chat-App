@@ -1,124 +1,135 @@
-import { Plus, LogIn, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Clock3, LogOut, LogIn, Plus, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import JoinRoomModal from "../components/JoinRoomModal";
 import CreateRoomModal from "../components/CreateRoomModal";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/useToast";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { username, email, userId ,logout  } = useAuth();
+  const { username, token, logout } = useAuth();
+  const { showToast } = useToast();
   const [showCreateModal, setShowCreateModal] = useState(false);
-
   const [showJoinModal, setShowJoinModal] = useState(false);
-
   const [roomName, setRoomName] = useState("");
-
   const [roomCode, setRoomCode] = useState("");
-  const [RecentRooms, setRecentRooms] = useState([])
+  const [recentRooms, setRecentRooms] = useState([]);
+  const [isLoadingRooms, setIsLoadingRooms] = useState(true);
 
-const HandleCreateRoom = async () => {
-  try {
-    const token = localStorage.getItem("token");
+  useEffect(() => {
+    if (!token) return;
 
-    const response = await fetch(
-      "http://localhost:5000/api/rooms/create",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          roomName,
-        }),
-      }
-    );
+    const fetchRecentRooms = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const user = await response.json();
 
-    const result = await response.json();
-
-
-    if (response.ok) {
-      navigate(`/room/${result.roomCode}`);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const HandleJoinRoom = async () => {
-  try {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(
-      "http://localhost:5000/api/rooms/join",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          roomCode,
-        }),
-      }
-    );
-
-    const result = await response.json();
-
-    console.log(result);
-
-    if (response.ok) {
-      navigate(`/room/${result.roomCode}`);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-const HandleLogout = () => {
-  logout();
-  navigate("/auth");
-};
-
-const FetchRecentRooms = async ()=>{
-  try {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(
-      "http://localhost:5000/api/auth/profile",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+        if (!response.ok) {
+          throw new Error(user.message || "Could not load your recent rooms.");
         }
+
+        const roomsByCode = new Map();
+        [...(Array.isArray(user.recentrooms) ? user.recentrooms : [])]
+          .reverse()
+          .forEach((room) => {
+            if (room?.roomCode && !roomsByCode.has(room.roomCode)) {
+              roomsByCode.set(room.roomCode, room);
+            }
+          });
+        setRecentRooms([...roomsByCode.values()]);
+      } catch (error) {
+        showToast(error.message || "Could not load your recent rooms.", "error");
+      } finally {
+        setIsLoadingRooms(false);
       }
-    );
+    };
 
-    const user = await response.json();
-    console.log(user)
-    setRecentRooms(user.recentrooms)
-    console.log(RecentRooms)
+    fetchRecentRooms();
+  }, [showToast, token]);
 
-  } catch (error) {
-    console.error(error);
-  } 
-}
+  const handleCreateRoom = async () => {
+    if (!roomName.trim()) {
+      showToast("Enter a name for your room first.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/rooms/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ roomName: roomName.trim() }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Could not create the room.");
+      }
+
+      showToast("Room created. Invite your friends with the room code!", "success");
+      setShowCreateModal(false);
+      navigate(`/room/${result.roomCode}`);
+    } catch (error) {
+      showToast(error.message || "Could not create the room.", "error");
+    }
+  };
+
+  const handleJoinRoom = async (code = roomCode) => {
+    const finalRoomCode = code.trim().toUpperCase();
+    if (!finalRoomCode) {
+      showToast("Enter a room code to join.", "error");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/rooms/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ roomCode: finalRoomCode }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Could not join that room.");
+      }
+
+      showToast(`Joined ${result.roomName || "the room"}!`, "success");
+      setShowJoinModal(false);
+      navigate(`/room/${result.roomCode}`);
+    } catch (error) {
+      showToast(error.message || "Could not join that room.", "error");
+    }
+  };
+
+
+  const handleLogout = () => {
+    logout();
+    showToast("You have been logged out.", "info");
+    navigate("/auth");
+  };
+
   return (
     <div
-      className="min-h-screen bg-cover opacity-90 bg-center text-white"
-      style={{
-        backgroundImage: "url('/background.png')",
-      }}
+      className="min-h-screen bg-cover bg-center text-white opacity-95"
+      style={{ backgroundImage: "url('/background.png')" }}
     >
       <CreateRoomModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         roomName={roomName}
         setRoomName={setRoomName}
-        onCreate={HandleCreateRoom}
+        onCreate={handleCreateRoom}
       />
 
       <JoinRoomModal
@@ -126,72 +137,109 @@ const FetchRecentRooms = async ()=>{
         onClose={() => setShowJoinModal(false)}
         roomCode={roomCode}
         setRoomCode={setRoomCode}
-        onJoin={HandleJoinRoom}
+        onJoin={handleJoinRoom}
       />
-      {/* Overlay */}
-      <div className="min-h-screen ">
-        <Header username={username} />
-        {/* Main Content */}
-        <div className="mx-auto flex max-w-6xl flex-col items-center px-6 pt-8">
-          <h1 className="playwrite mb-4 text-center text-5xl">Welcome Back</h1>
 
+      <div className="min-h-screen">
+        <Header username={username} />
+        <main className="mx-auto flex max-w-6xl flex-col items-center px-6 pb-12 pt-8">
+          <h1 className="playwrite mb-4 text-center text-5xl">Welcome Back</h1>
           <p className="mb-12 text-center text-white/70">
             Create a room or join an existing one.
           </p>
 
-          {/* Action Cards */}
           <div className="grid w-full max-w-4xl gap-8 md:grid-cols-2">
-            {/* Create Room */}
-            <div
-              className="group p-8 cursor-pointer rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 transition hover:scale-[1.02] hover:bg-white/15"
+            <button
+              type="button"
+              className="group cursor-pointer overflow-hidden rounded-3xl border-2 border-white/15 bg-white/10 p-8 text-left backdrop-blur-md transition hover:scale-[1.02] hover:bg-white/15"
               onClick={() => setShowCreateModal(true)}
             >
               <Plus size={40} className="mb-4 text-violet-400" />
-
               <h2 className="mb-2 text-2xl font-semibold">Create Room</h2>
-
               <p className="text-white/60">
                 Generate a new room and invite others with a room code.
               </p>
-            </div>
+            </button>
 
-            {/* Join Room */}
-            <div
-              className="group cursor-pointer rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 p-8  transition hover:scale-[1.02] hover:bg-white/15"
+            <button
+              type="button"
+              className="group cursor-pointer overflow-hidden rounded-3xl border-2 border-white/15 bg-white/10 p-8 text-left backdrop-blur-md transition hover:scale-[1.02] hover:bg-white/15"
               onClick={() => setShowJoinModal(true)}
             >
               <LogIn size={40} className="mb-4 text-violet-400" />
-
               <h2 className="mb-2 text-2xl font-semibold">Join Room</h2>
-
               <p className="text-white/60">
                 Enter a room code and start chatting instantly.
               </p>
-            </div>
+            </button>
           </div>
 
-          {/* Recent Rooms */}
-          <div className="mt-16 w-full max-w-4xl">
-            <h2 className="mb-6 text-2xl font-semibold">Recent Rooms</h2>
-              <button onClick={FetchRecentRooms} className="px-4 py-2 border bg-red-300 rounded-sm text-black">Fetch recent rooms</button>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between rounded-2xl border-2 border-white/10 bg-white/10 p-4 backdrop-blur-md">
-                <div>
-                  <h3 className="font-medium">General Chat</h3>
-                  <p className="text-sm text-white/60">Room Code: A7K92B</p>
+          <section className="mt-16 w-full max-w-4xl">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">Recent Rooms</h2>
+              {!isLoadingRooms && recentRooms.length > 0 && (
+                <span className="text-sm text-white/50">
+                  {recentRooms.length} {recentRooms.length === 1 ? "room" : "rooms"}
+                </span>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              {isLoadingRooms ? (
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-5 text-white/60 backdrop-blur-md">
+                  Loading your recent rooms...
                 </div>
-
-                <span className="text-sm text-green-400">8 Online</span>
-              </div>
+              ) : recentRooms.length > 0 ? (
+                recentRooms.map((room) => (
+                  <button
+                    type="button"
+                    key={room._id || room.roomCode}
+                    onClick={() => handleJoinRoom(room.roomCode)}
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl border border-white/15 bg-white/10 p-4 text-left backdrop-blur-md transition hover:border-violet-300/40 hover:bg-white/15"
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">
+                        {room.roomName || "Untitled room"}
+                      </span>
+                      <span className="mt-1 block text-sm text-white/60">
+                        Room code: {room.roomCode}
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-4 text-sm text-white/60">
+                      <span className="hidden items-center gap-1.5 sm:flex">
+                        <Users size={15} />
+                        {room.members?.length ?? 0}
+                      </span>
+                      {room.lastActivity && (
+                        <span className="hidden items-center gap-1.5 md:flex">
+                          <Clock3 size={15} />
+                          {new Date(room.lastActivity).toLocaleDateString()}
+                        </span>
+                      )}
+                      <span className="text-violet-200">Join</span>
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-white/10 p-6 text-center backdrop-blur-md">
+                  <p className="font-medium">No recent rooms yet</p>
+                  <p className="mt-1 text-sm text-white/60">
+                    Create a room or join one to see it here.
+                  </p>
+                </div>
+              )}
             </div>
-          </div>
+          </section>
 
-          {/* Logout */}
-          <button className="mt-12 cursor-pointer flex items-center gap-2 rounded-xl bg-red-500/20 px-6 py-3 text-red-300 transition hover:bg-red-500/30" onClick={HandleLogout}>
+          <button
+            type="button"
+            className="mt-12 flex cursor-pointer items-center gap-2 rounded-xl bg-red-500/20 px-6 py-3 text-red-300 transition hover:bg-red-500/30"
+            onClick={handleLogout}
+          >
             <LogOut size={18} />
             Logout
           </button>
-        </div>
+        </main>
       </div>
     </div>
   );
