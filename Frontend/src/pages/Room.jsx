@@ -2,7 +2,7 @@ import { Send, LogOut, Copy, Check } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import socket from "../socket";
 const Room = () => {
   const { roomCode } = useParams();
@@ -13,6 +13,7 @@ const Room = () => {
   const [message, setMessage] = useState("");
   const [room, setRoom] = useState(null);
   const [messages, setMessages] = useState([]);
+  const messagesEndRef = useRef(null);
   const [members, setMembers] = useState([]);
 
   const copyRoomCode = () => {
@@ -155,8 +156,6 @@ const Room = () => {
 
       const result = await response.json();
 
-      console.log(result);
-
       setMessage("");
     } catch (error) {
       console.error(error);
@@ -194,6 +193,11 @@ const HandleLeaveRoom = async () => {
     console.error(error);
   }
 };
+useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({
+    behavior: "smooth",
+  });
+}, [messages]);
   return (
     <div
       className="min-h-screen bg-cover bg-center opacity-90 text-white"
@@ -240,7 +244,7 @@ const HandleLeaveRoom = async () => {
           {/* Messages */}
           <div className="flex flex-col rounded-3xl overflow-hidden backdrop-blur-md bg-white/10 border-2  border-white/15 transition ">
             {/* Messages List */}
-            <div className="flex-1 space-y-4 overflow-y-auto p-6">
+            <div className="flex-1 space-y-4 overflow-y-auto glass-scrollbar p-6">
               {messages.map((msg) => {
                 if (msg.type === "system") {
                   return (
@@ -281,6 +285,7 @@ const HandleLeaveRoom = async () => {
                   </div>
                 );
               })}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Input */}

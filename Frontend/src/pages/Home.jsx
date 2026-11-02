@@ -16,6 +16,7 @@ const Home = () => {
   const [roomName, setRoomName] = useState("");
 
   const [roomCode, setRoomCode] = useState("");
+  const [RecentRooms, setRecentRooms] = useState([])
 
 const HandleCreateRoom = async () => {
   try {
@@ -37,7 +38,6 @@ const HandleCreateRoom = async () => {
 
     const result = await response.json();
 
-    console.log(result);
 
     if (response.ok) {
       navigate(`/room/${result.roomCode}`);
@@ -81,6 +81,31 @@ const HandleLogout = () => {
   logout();
   navigate("/auth");
 };
+
+const FetchRecentRooms = async ()=>{
+  try {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(
+      "http://localhost:5000/api/auth/profile",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      }
+    );
+
+    const user = await response.json();
+    console.log(user)
+    setRecentRooms(user.recentrooms)
+    console.log(RecentRooms)
+
+  } catch (error) {
+    console.error(error);
+  } 
+}
   return (
     <div
       className="min-h-screen bg-cover opacity-90 bg-center text-white"
@@ -148,24 +173,15 @@ const HandleLogout = () => {
           {/* Recent Rooms */}
           <div className="mt-16 w-full max-w-4xl">
             <h2 className="mb-6 text-2xl font-semibold">Recent Rooms</h2>
-
+              <button onClick={FetchRecentRooms} className="px-4 py-2 border bg-red-300 rounded-sm text-black">Fetch recent rooms</button>
             <div className="space-y-4">
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl">
+              <div className="flex items-center justify-between rounded-2xl border-2 border-white/10 bg-white/10 p-4 backdrop-blur-md">
                 <div>
                   <h3 className="font-medium">General Chat</h3>
                   <p className="text-sm text-white/60">Room Code: A7K92B</p>
                 </div>
 
                 <span className="text-sm text-green-400">8 Online</span>
-              </div>
-
-              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-xl">
-                <div>
-                  <h3 className="font-medium">Gaming Room</h3>
-                  <p className="text-sm text-white/60">Room Code: X4M8PQ</p>
-                </div>
-
-                <span className="text-sm text-green-400">3 Online</span>
               </div>
             </div>
           </div>

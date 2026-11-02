@@ -18,10 +18,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    recentrooms: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Room",
+      },
+    ],
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const User = mongoose.model("User", userSchema);

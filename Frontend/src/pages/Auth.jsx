@@ -47,7 +47,6 @@ const navigate = useNavigate();
 
       localStorage.setItem("user", JSON.stringify(result));
 
-      console.log(result);
       login(result);
       setLoginEmail("");
       setLoginPassword("");

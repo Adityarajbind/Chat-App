@@ -33,7 +33,7 @@ export const registerUser = async (req, res) => {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      }
+      },
     );
 
     res.status(201).json({
@@ -79,7 +79,7 @@ export const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      }
+      },
     );
 
     res.status(200).json({
@@ -96,5 +96,19 @@ export const loginUser = async (req, res) => {
 };
 
 export const getUserProfile = async (req, res) => {
-  res.status(200).json(req.user);
+  const userId = req.user.id;
+  try {
+    const user = await User.findById(userId).populate("recentrooms");
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
 };

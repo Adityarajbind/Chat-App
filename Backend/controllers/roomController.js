@@ -1,5 +1,5 @@
 import Room from "../models/Room.js";
-
+import User from "../models/User.js";
 function GenerateRoomCode() {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -26,7 +26,9 @@ const createRoom = async (req, res) => {
       createdBy: userId,
       members: [userId],
     });
-
+    const user = await User.findOne({ _id: userId });
+    user.recentrooms.push(room._id);
+    await user.save();
     res.status(201).json(room);
   } catch (error) {
     res.status(500).json({
@@ -52,6 +54,9 @@ const joinRoom = async (req, res) => {
     if (!room.members.includes(userId)) {
       room.members.push(userId);
     }
+    const user = await User.findOne({ _id: userId });
+    user.recentrooms.push(room._id);
+    await user.save();
 
     room.lastActivity = new Date();
 
@@ -80,6 +85,7 @@ const getRoom = async (req, res) => {
     }
 
     res.json(room);
+    console.log(room);
   } catch (error) {
     res.status(500).json({
       message: error.message,
