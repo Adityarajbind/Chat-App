@@ -12,9 +12,25 @@ import Room from "./models/Room.js";
 const app = express();
 const server = http.createServer(app);
 dotenv.config();
+const frontendOrigins = (process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean)
+  .map((origin) => {
+    try {
+      return new URL(origin).origin;
+    } catch {
+      throw new Error(`Invalid frontend origin in FRONTEND_URL: ${origin}`);
+    }
+  });
+
+if (frontendOrigins.length === 0) {
+  throw new Error("FRONTEND_URL must contain at least one allowed frontend origin.");
+}
+
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL] ,
+    origin: frontendOrigins,
     methods: ["GET", "POST"],
   },
 });
