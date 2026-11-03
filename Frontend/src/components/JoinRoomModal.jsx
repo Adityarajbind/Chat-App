@@ -33,7 +33,7 @@ const JoinRoomModal = ({
           </button>
 
           <button
-            onClick={onJoin}
+            onClick={()=>onJoin(roomCode)}
             className="flex-1 rounded-xl cursor-pointer bg-violet-600 py-3 hover:bg-violet-500"
           >
             Join
