@@ -8,7 +8,7 @@ An online chat application where users can create or join chat rooms and exchang
 - Create chat rooms and share their six-character room codes.
 - Join a room using its code and see its members.
 - Send and receive messages in real time.
-- Load room message history and revisit recent rooms.
+- Load recent room messages first, with older history available on demand, and revisit recent rooms.
 - Passwords are hashed, and authenticated API requests use JSON Web Tokens.
 - Messages expire after three days. Rooms are removed after three days without activity.
 
@@ -111,6 +111,11 @@ The backend exposes these route groups:
 - `/api/auth` — registration, login, and authenticated profile lookup
 - `/api/rooms` — create, join, leave, and inspect rooms and members
 - `/api/messages` — send messages and retrieve room message history
+
+`GET /api/messages/:roomCode` returns the latest 50 messages and a `hasMore` flag.
+Pass `limit` to change the page size (up to 100), then use `beforeCreatedAt`
+and `beforeId` from the oldest message to retrieve older pages. Send requests may
+include a unique `clientMessageId` to make retries idempotent.
 
 The Socket.IO server broadcasts room messages and member join/leave notifications.
 

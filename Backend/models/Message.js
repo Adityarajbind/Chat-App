@@ -19,6 +19,10 @@ const MessageSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    clientMessageId: {
+      type: String,
+      trim: true,
+    },
     expiresAt: {
       type: Date,
       default: () =>
@@ -28,6 +32,15 @@ const MessageSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+  },
+);
+
+MessageSchema.index({ roomId: 1, createdAt: -1, _id: -1 });
+MessageSchema.index(
+  { roomId: 1, sender: 1, clientMessageId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { clientMessageId: { $type: "string" } },
   },
 );
 

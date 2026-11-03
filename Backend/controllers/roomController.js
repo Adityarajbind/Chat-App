@@ -85,7 +85,6 @@ const getRoom = async (req, res) => {
     }
 
     res.json(room);
-    console.log(room);
   } catch (error) {
     res.status(500).json({
       message: error.message,
