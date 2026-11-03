@@ -70,7 +70,7 @@ An online chat application where users can create or join chat rooms and exchang
 
 5. Open the local URL printed by Vite (by default, `http://localhost:5173`) and register an account.
 
-The backend and frontend must both be running, and MongoDB must be reachable by the backend. When deploying, set the backend's `FRONTEND_URL` to the exact public frontend origin (for example, `https://chat-app-brown-psi-62.vercel.app`) in the backend host's environment settings. Do not include a path. Multiple allowed origins can be comma-separated.
+The backend and frontend must both be running, and MongoDB must be reachable by the backend. 
 
 ## Development
 
@@ -121,4 +121,4 @@ The Socket.IO server broadcasts room messages and member join/leave notification
 
 ## Environment configuration
 
-The frontend reads its backend address from `Frontend/.env` as `VITE_BACKEND_URL`; update that value once to point both the API and Socket.IO client at a different backend. The backend uses `Backend/.env` for `PORT`, `MONGO_URI`, `JWT_SECRET`, and `FRONTEND_URL` (a comma-separated list of allowed frontend origins for Socket.IO). Example files are provided in both folders.
+The frontend reads its backend address from `Frontend/.env` as `VITE_BACKEND_URL`; update that value once to point both the API and Socket.IO client at a different backend. The backend uses `Backend/.env` for `PORT`, `MONGO_URI`, `JWT_SECRET`, and `FRONTEND_URL` (the allowed frontend origins for Socket.IO). Example files are provided in both folders.
