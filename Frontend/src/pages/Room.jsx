@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/useToast";
 import socket from "../socket";
+import { BACKEND_URL } from "../api/config";
 
 const Room = () => {
   const { roomCode } = useParams();
@@ -32,7 +33,7 @@ const Room = () => {
   const getMembers = useCallback(async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/rooms/${roomCode}/members`,
+        `${BACKEND_URL}/api/rooms/${roomCode}/members`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -59,11 +60,11 @@ const Room = () => {
         const headers = { Authorization: `Bearer ${token}` };
         const [roomResponse, membersResponse, messagesResponse] =
           await Promise.all([
-            fetch(`http://localhost:5000/api/rooms/${roomCode}`, { headers }),
-            fetch(`http://localhost:5000/api/rooms/${roomCode}/members`, {
+            fetch(`${BACKEND_URL}/api/rooms/${roomCode}`, { headers }),
+            fetch(`${BACKEND_URL}/api/rooms/${roomCode}/members`, {
               headers,
             }),
-            fetch(`http://localhost:5000/api/messages/${roomCode}`, {
+            fetch(`${BACKEND_URL}/api/messages/${roomCode}`, {
               headers,
             }),
           ]);
@@ -160,7 +161,7 @@ const Room = () => {
     if (!message.trim()) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/messages/send", {
+      const response = await fetch(`${BACKEND_URL}/api/messages/send`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -185,7 +186,7 @@ const Room = () => {
 
   const handleLeaveRoom = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/rooms/leave", {
+      const response = await fetch(`${BACKEND_URL}/api/rooms/leave`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

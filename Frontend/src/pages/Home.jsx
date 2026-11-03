@@ -6,6 +6,7 @@ import CreateRoomModal from "../components/CreateRoomModal";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/useToast";
+import { BACKEND_URL } from "../api/config";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const Home = () => {
 
     const fetchRecentRooms = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/profile", {
+        const response = await fetch(`${BACKEND_URL}/api/auth/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,7 +61,7 @@ const Home = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/rooms/create", {
+      const response = await fetch(`${BACKEND_URL}/api/rooms/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +91,7 @@ const Home = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/rooms/join", {
+      const response = await fetch(`${BACKEND_URL}/api/rooms/join`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

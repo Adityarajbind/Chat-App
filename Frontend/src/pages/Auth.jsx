@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/useToast";
+import { BACKEND_URL } from "../api/config";
 
 import LoginForm from "../components/LoginForm";
 import RegisterForm from "../components/RegisterForm";
@@ -27,7 +28,7 @@ const navigate = useNavigate();
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +65,7 @@ const navigate = useNavigate();
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
+      const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
